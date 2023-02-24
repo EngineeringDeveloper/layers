@@ -4,6 +4,7 @@
 ## Concept 
 App & Website which looks at the weather and suggests what level of kit you will be needing
 
+
 ### Ideas
 
 - Default levels of kit
@@ -15,3 +16,6 @@ App & Website which looks at the weather and suggests what level of kit you will
     - need to pack a spare jacket
 - Do you need mudguards?
 - Ice Risk?
+- User Feedback
+  - Can "review" a previous suggestion to improve future ones
+    - Too Hot/Cold/Wet/ Too much spare kit
