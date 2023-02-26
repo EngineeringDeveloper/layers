@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getLocation } from "../../services/location.service";
 import { OpenWeatherCurrentResponse } from "../../types/OpenWeather.types";
 import { retrieveCurrentWeather } from "../../utils/RetrieveWeather";
 type WeatherDetails = {
@@ -10,9 +11,34 @@ export const WeatherSetup = () => {
     lon: 0,
     lat: 0,
   });
-
   const [weatherResponse, setWeatherResponse] =
     useState<OpenWeatherCurrentResponse>();
+
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
+  useEffect(() => {
+    const getLocationAndSetState = async () => {
+      const userLocation = await getLocation();
+      setLocation(userLocation);
+    };
+    getLocationAndSetState();
+  }, []);
+
+  useEffect(() => {
+    if (location) {
+      const getWeatherAndSetState = async () => {
+        const weatherData = await retrieveCurrentWeather({
+          lat: location.latitude,
+          lon: location.longitude,
+        });
+        setWeatherResponse(weatherData);
+      };
+      getWeatherAndSetState();
+    }
+  }, [location]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -26,27 +52,31 @@ export const WeatherSetup = () => {
 
   return (
     <div className="App">
-      <form onSubmit={(e) => handleSubmit(e)}>
-        <label>
-          Lat:
-          <input
-            type="text"
-            name="lat"
-            onChange={(e) => handleChange(e)}
-            step="any"
-          />
-        </label>
-        <label>
-          Lon:
-          <input
-            type="text"
-            name="lon"
-            onChange={(e) => handleChange(e)}
-            step="any"
-          />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+      {!location && (
+        <>
+          <form onSubmit={(e) => handleSubmit(e)}>
+            <label>
+              Lat:
+              <input
+                type="text"
+                name="lat"
+                onChange={(e) => handleChange(e)}
+                step="any"
+              />
+            </label>
+            <label>
+              Lon:
+              <input
+                type="text"
+                name="lon"
+                onChange={(e) => handleChange(e)}
+                step="any"
+              />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
+        </>
+      )}
       <div>
         {weatherResponse && (
           <div>
