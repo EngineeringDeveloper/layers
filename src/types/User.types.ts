@@ -15,11 +15,11 @@ export type LayerOptions = {
 
 //** Return type of main kit selection function */
 export type KitSelection = {
-    hat: Layers | undefined;
-    torso: Layers | undefined;
-    legs: Layers | undefined;
-    feet: Layers | undefined;
-    hands: Layers | undefined;
+    hat: Layers;
+    torso: Layers;
+    legs: Layers;
+    feet: Layers;
+    hands: Layers;
 }
 
 export type Layers = {

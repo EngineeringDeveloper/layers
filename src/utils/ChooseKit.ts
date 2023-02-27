@@ -14,7 +14,7 @@ const defaultNoSelection: Kit = {
     tempMax: 0,
     waterResistance: 0,
     layerType: LayerType.any,
-    adjustments: []
+    adjustments: [],
 };
 
 export async function selectKit(
@@ -26,82 +26,118 @@ export async function selectKit(
     const feeslLike = weather.main.feels_like;
     // const rainChance = weather
 
-    // for each object in KitSelection
-    // TODO: Ok to map over or full layout of each attrib?
+    // for each object in User/KitSelection
     // find a kit combination which satisfies the minimum and maximum temperature
-    const torsoOptions = cartesianSelection(user.torso)
+    const kitSelection = Object.fromEntries(Object.entries(user).map((currentLayer) => {
+        const [layerPos, layerOptions] = currentLayer;
+        const best = pickBest(layerOptions, tempMax, tempMin)
+        return [layerPos, best]
+    })) as KitSelection
+
+    // TODO check for any null selections?
+
+    return kitSelection;
+}
+
+function pickBest(options:LayerOptions, tempMax: number, tempMin: number) {
+    const torsoOptions = cartesianSelection(options) as [Kit, Kit, Kit][];
 
     // want at least the min temp to be exceeded
-    const torsoMinTemps = minTemps(torsoOptions)
-    const torsoFilteredOptions = torsoMinTemps.filter((minTemp) => {
-        return minTemp > tempMin 
-    })
+    const minTempOptions = minTemps(torsoOptions);
+    const minFilteredOptions = torsoOptions.filter((_, index) => {
+        return minTempOptions[index] > tempMin;
+    });
 
     // can the maxTemp be < the tempMax
-    const torsoMaxTemps = maxTemps(torsoFilteredOptions)
-    const torsoRemainingOptions = torsoMaxTemps.filter((maxTemp) => {
-        return maxTemp < tempMax
-    })
+    const maxTempOptions = maxTemps(minFilteredOptions);
+    const maxMinFilteredOptions = minFilteredOptions.filter((_, index) => {
+        return maxTempOptions[index] < tempMax;
+    });
 
-    // Check for Rain?
+    // TODO Check for Rain?
+    // TODO Check for feels like?
 
-    // Check for feels like?
+    let top;
+    let baseLayer;
+    let external;
 
-    // Check for Other
+    switch (maxMinFilteredOptions.length) {
+        case 0:
+            console.error("No kit options satisfied min and Max Requirements");
+            if (minFilteredOptions.length > 0) {
+                console.log(
+                    "Selecting first kit options which satisfy the min temp requirements"
+                );
+                top = minFilteredOptions[0][0];
+                baseLayer = minFilteredOptions[0][1];
+                external = minFilteredOptions[0][2];
+            } else {
+                console.warn("No Appropriate Kit was found");
+                return null;
+            }
+            break;
+        case 1:
+            top = maxMinFilteredOptions[0][0];
+            baseLayer = maxMinFilteredOptions[0][1];
+            external = maxMinFilteredOptions[0][2];
+            break;
+        
+        default:
+            // TODO Decide how to pick between multiple options
+            top = minFilteredOptions[0][0];
+            baseLayer = minFilteredOptions[0][1];
+            external = minFilteredOptions[0][2];
+            break;
+    }
 
-    // const kitSelection = Object.entries(user).reduce<KitSelection>(
-    //     (selection, currentLayer) => {
-    //         const [layerPos, layerOptions] = currentLayer;
-    //         const combi = cartesian(
-    //             layerOptions.top,
-    //             // Because baseLayer and external are optional
-    //             [...layerOptions.baseLayer, defaultNoSelection],
-    //             [...layerOptions.external, defaultNoSelection]
-    //         );
+    // default is No kit not the default kit option
+    if (baseLayer == defaultNoSelection) {
+        baseLayer = null
+    }
 
-    //         // find the min and max temperature ranges
+    if (external == defaultNoSelection) {
+        external = null
+    }
 
-    //         // check the combinations against the Weather
-
-    //         // set the selection
-    //         // How to make TS happy with this index?
-    //         selection[layerPos] = {};
-
-    //         return selection;
-    //     },
-    //     {
-    //         hat: undefined,
-    //         torso: undefined,
-    //         legs: undefined,
-    //         feet: undefined,
-    //         hands: undefined,
-    //     }
-    // );
-    // return kitSelection;
+    return {
+        baseLayer,
+        top,
+        external,
+    }
 }
 
 //** Find the Max temp sum of the kit options and return that kit array* /
 function maxTemps(options: Kit[][]) {
-    //  How exactly does Max temp work on a kit 
+    // TODO Consider Feedback
+    //  How exactly does Max temp work on a kit
     // perfetto = 15 deg
-    // Perfetto + Gillet = 10 Deg 
+    // Perfetto + Gillet = 10 Deg
     // So top - extras
     return options.map((kitSet) => {
-        return kitSet.slice(1,-1).reduce<number>((accum, kit, _) => {return accum - kit.tempMax}, kitSet[0].tempMax)
-    })
+        return kitSet.slice(1, -1).reduce<number>((accum, kit, _) => {
+            return accum - kit.tempMax;
+        }, kitSet[0].tempMax);
+    });
     //.reduce<number>((prev, current, currentIndex, array) => { return array[prev] > current ? prev : currentIndex }, 0)]
 }
 
 //** Find the Min temp sum of the kit options and return that kit array */
 function minTemps(options: Kit[][]) {
+    // TODO Consider Feedback
     return options.map((kitSet) => {
-        return kitSet.reduce<number>((accum, kit, _) => {return accum + kit.tempMin}, 0)
-    })
+        return kitSet.reduce<number>((accum, kit, _) => {
+            return accum + kit.tempMin;
+        }, 0);
+    });
     //.reduce<number>((prev, current, currentIndex, array) => { return array[prev] < current ? prev : currentIndex }, 0)]
 }
 
 function cartesianSelection(layerOptions: LayerOptions) {
-    return cartesian(layerOptions.top, [...layerOptions.baseLayer, defaultNoSelection], [...layerOptions.external, defaultNoSelection])
+    return cartesian(
+        layerOptions.top,
+        [...layerOptions.baseLayer, defaultNoSelection],
+        [...layerOptions.external, defaultNoSelection]
+    );
 }
 
 //** X products arrays to get all the combinations */
