@@ -5,6 +5,7 @@ import {
     LayerOptions,
     LayerType,
     User,
+    WaterResistance,
 } from "../types/User.types";
 
 const defaultNoSelection: Kit = {
@@ -24,13 +25,16 @@ export async function selectKit(
     const tempMax = weather.main.temp_max;
     const tempMin = weather.main.temp_min;
     const feeslLike = weather.main.feels_like;
-    // const rainChance = weather
+
+    // TODO User adjusted Rain Tolerance?
+    const rainChance = weather.rain["1h"] > 0.2? weather.rain["1h"] > 0.5? WaterResistance.high : WaterResistance.resistant : WaterResistance.none
+
 
     // for each object in User/KitSelection
     // find a kit combination which satisfies the minimum and maximum temperature
     const kitSelection = Object.fromEntries(Object.entries(user).map((currentLayer) => {
         const [layerPos, layerOptions] = currentLayer;
-        const best = pickBest(layerOptions, tempMax, tempMin)
+        const best = pickBest(layerOptions, tempMax, tempMin, rainChance)
         return [layerPos, best]
     })) as KitSelection
 
@@ -39,7 +43,7 @@ export async function selectKit(
     return kitSelection;
 }
 
-function pickBest(options:LayerOptions, tempMax: number, tempMin: number) {
+function pickBest(options:LayerOptions, tempMax: number, tempMin: number, rainChance: WaterResistance) {
     const torsoOptions = cartesianSelection(options) as [Kit, Kit, Kit][];
 
     // want at least the min temp to be exceeded
@@ -48,13 +52,20 @@ function pickBest(options:LayerOptions, tempMax: number, tempMin: number) {
         return minTempOptions[index] > tempMin;
     });
 
+
+    // TODO Check for Rain - Should this overide the maxTemp?
+    const rainFilteredOptions = minFilteredOptions.filter((kitSet) => {
+        // either the Top or External Kit must have suitable weather resistance
+        return kitSet[2].waterResistance == rainChance || kitSet[0].waterResistance == rainChance
+    })
+
+
     // can the maxTemp be < the tempMax
     const maxTempOptions = maxTemps(minFilteredOptions);
-    const maxMinFilteredOptions = minFilteredOptions.filter((_, index) => {
+    const maxMinFilteredOptions = rainFilteredOptions.filter((_, index) => {
         return maxTempOptions[index] < tempMax;
     });
 
-    // TODO Check for Rain?
     // TODO Check for feels like?
 
     let top;
