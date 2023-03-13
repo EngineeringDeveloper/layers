@@ -144,13 +144,26 @@ function minTemps(options: Kit[][]) {
 }
 
 function cartesianSelection(layerOptions: LayerOptions) {
-    return cartesian(
-        layerOptions.top,
-        [...layerOptions.baseLayer, defaultNoSelection],
-        [...layerOptions.external, defaultNoSelection]
-    );
+    // return cartesian(
+    //     layerOptions.top,
+    //     [...layerOptions.baseLayer, defaultNoSelection],
+    //     [...layerOptions.external, defaultNoSelection]
+    // );
+    // TODO Use this Generator to reduce overhead, IE not generate all combinations?
+    return [...cartesianIterator(
+            [layerOptions.top,
+            [...layerOptions.baseLayer, defaultNoSelection],
+            [...layerOptions.external, defaultNoSelection]]
+        )];
 }
 
 //** X products arrays to get all the combinations */
-const cartesian = (...a: any[]): any[][] =>
-    a.reduce((a, b) => a.flatMap((d: any) => b.map((e: any) => [d, e].flat())));
+// function cartesian<T>(...a: T[][]): T[][] {
+//     return a.reduce((a, b) => a.flatMap((d: any) => b.map((e: any) => [d, e].flat())));
+// }
+
+//** X products arrays to get all the combinations */
+function* cartesianIterator<T>(items: T[][]): Generator<T[]> {
+    const remainder = items.length > 1 ? cartesianIterator(items.slice(1)) : [[]];
+    for (let r of remainder) for (let h of items.at(0)!) yield [h, ...r];
+  }
