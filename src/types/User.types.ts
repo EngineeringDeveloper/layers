@@ -5,13 +5,13 @@ export type User = {
     legs: LayerOptions;
     feet: LayerOptions;
     hands: LayerOptions;
-}
+};
 
 export type LayerOptions = {
     baseLayer: Kit[];
-    top: Kit[];
-    external: Kit[];
-}
+    outerLayer: Kit[];
+    overLayer: Kit[];
+};
 
 //** Return type of main kit selection function */
 export type KitSelection = {
@@ -20,15 +20,14 @@ export type KitSelection = {
     legs: Layers;
     feet: Layers;
     hands: Layers;
-}
+};
 
 export type Layers = {
     baseLayer: Kit | null;
     //** Must have a top */
     top: Kit;
     external: Kit | null;
-}
-
+};
 
 //** User owns kit */
 export type Kit = {

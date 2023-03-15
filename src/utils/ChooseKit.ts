@@ -27,23 +27,34 @@ export async function selectKit(
     const feeslLike = weather.main.feels_like;
 
     // TODO User adjusted Rain Tolerance?
-    const rainChance = weather.rain["1h"] > 0.2? weather.rain["1h"] > 0.5? WaterResistance.high : WaterResistance.resistant : WaterResistance.none
-
+    const rainChance =
+        weather.rain["1h"] > 0.2
+            ? weather.rain["1h"] > 0.5
+                ? WaterResistance.high
+                : WaterResistance.resistant
+            : WaterResistance.none;
 
     // for each object in User/KitSelection
     // find a kit combination which satisfies the minimum and maximum temperature
-    const kitSelection = Object.fromEntries(Object.entries(user).map((currentLayer) => {
-        const [layerPos, layerOptions] = currentLayer;
-        const best = pickBest(layerOptions, tempMax, tempMin, rainChance)
-        return [layerPos, best]
-    })) as KitSelection
+    const kitSelection = Object.fromEntries(
+        Object.entries(user).map((currentLayer) => {
+            const [layerPos, layerOptions] = currentLayer;
+            const best = pickBest(layerOptions, tempMax, tempMin, rainChance);
+            return [layerPos, best];
+        })
+    ) as KitSelection;
 
     // TODO check for any null selections?
 
     return kitSelection;
 }
 
-function pickBest(options:LayerOptions, tempMax: number, tempMin: number, rainChance: WaterResistance) {
+function pickBest(
+    options: LayerOptions,
+    tempMax: number,
+    tempMin: number,
+    rainChance: WaterResistance
+) {
     const torsoOptions = cartesianSelection(options) as [Kit, Kit, Kit][];
 
     // want at least the min temp to be exceeded
@@ -52,13 +63,14 @@ function pickBest(options:LayerOptions, tempMax: number, tempMin: number, rainCh
         return minTempOptions[index] > tempMin;
     });
 
-
     // TODO Check for Rain - Should this overide the maxTemp?
     const rainFilteredOptions = minFilteredOptions.filter((kitSet) => {
         // either the Top or External Kit must have suitable weather resistance
-        return kitSet[2].waterResistance == rainChance || kitSet[0].waterResistance == rainChance
-    })
-
+        return (
+            kitSet[2].waterResistance == rainChance ||
+            kitSet[0].waterResistance == rainChance
+        );
+    });
 
     // can the maxTemp be < the tempMax
     const maxTempOptions = maxTemps(minFilteredOptions);
@@ -92,7 +104,7 @@ function pickBest(options:LayerOptions, tempMax: number, tempMin: number, rainCh
             baseLayer = maxMinFilteredOptions[0][1];
             external = maxMinFilteredOptions[0][2];
             break;
-        
+
         default:
             // TODO Decide how to pick between multiple options
             top = minFilteredOptions[0][0];
@@ -103,18 +115,18 @@ function pickBest(options:LayerOptions, tempMax: number, tempMin: number, rainCh
 
     // default is No kit not the default kit option
     if (baseLayer == defaultNoSelection) {
-        baseLayer = null
+        baseLayer = null;
     }
 
     if (external == defaultNoSelection) {
-        external = null
+        external = null;
     }
 
     return {
         baseLayer,
         top,
         external,
-    }
+    };
 }
 
 //** Find the Max temp sum of the kit options and return that kit array* /
@@ -150,11 +162,13 @@ function cartesianSelection(layerOptions: LayerOptions) {
     //     [...layerOptions.external, defaultNoSelection]
     // );
     // TODO Use this Generator to reduce overhead, IE not generate all combinations?
-    return [...cartesianIterator(
-            [layerOptions.top,
+    return [
+        ...cartesianIterator([
+            layerOptions.outerLayer,
             [...layerOptions.baseLayer, defaultNoSelection],
-            [...layerOptions.external, defaultNoSelection]]
-        )];
+            [...layerOptions.overLayer, defaultNoSelection],
+        ]),
+    ];
 }
 
 //** X products arrays to get all the combinations */
@@ -164,6 +178,7 @@ function cartesianSelection(layerOptions: LayerOptions) {
 
 //** X products arrays to get all the combinations */
 function* cartesianIterator<T>(items: T[][]): Generator<T[]> {
-    const remainder = items.length > 1 ? cartesianIterator(items.slice(1)) : [[]];
+    const remainder =
+        items.length > 1 ? cartesianIterator(items.slice(1)) : [[]];
     for (let r of remainder) for (let h of items.at(0)!) yield [h, ...r];
-  }
+}

@@ -1,5 +1,34 @@
 import { User, Kit, LayerType } from "../types/User.types";
 
+
+export let defaultKit: User = {
+    hat: {
+        baseLayer: [],
+        outerLayer: [], // Always wear a helmet!
+        overLayer: [],
+    },
+    torso: {
+        baseLayer: [], // one base
+        outerLayer: [], // long Like a warm perfetto? and short,
+        overLayer: [], // Rain Jacket
+    },
+    legs: {
+        baseLayer: [],
+        outerLayer: [], // Long bibs and shorts
+        overLayer: [],
+    },
+    feet: {
+        baseLayer: [], // warm sock and summer sock
+        outerLayer: [], // standard shoe - always picks a sock
+        overLayer: [], // overshoes 
+    },
+    hands: {
+        baseLayer: [], 
+        outerLayer: [], // gloves or no gloves 
+        overLayer: [],
+    },
+};
+
 // Example of what the database would be like with the current types
 export let dataBase = new Map<string, User>([
     [
@@ -24,7 +53,7 @@ export let dataBase = new Map<string, User>([
                         adjustments: [],
                     },
                 ],
-                top: [
+                outerLayer: [
                     {
                         label: "topWarm",
                         id: 0,
@@ -42,7 +71,7 @@ export let dataBase = new Map<string, User>([
                         adjustments: [],
                     },
                 ],
-                external: [
+                overLayer: [
                     {
                         label: "externalWarm",
                         id: 0,
@@ -80,7 +109,7 @@ export let dataBase = new Map<string, User>([
                         adjustments: [],
                     },
                 ],
-                top: [
+                outerLayer: [
                     {
                         label: "topWarm",
                         id: 0,
@@ -98,7 +127,7 @@ export let dataBase = new Map<string, User>([
                         adjustments: [],
                     },
                 ],
-                external: [
+                overLayer: [
                     {
                         label: "externalWarm",
                         id: 0,
@@ -136,7 +165,7 @@ export let dataBase = new Map<string, User>([
                         adjustments: [],
                     },
                 ],
-                top: [
+                outerLayer: [
                     {
                         label: "topWarm",
                         id: 0,
@@ -154,7 +183,7 @@ export let dataBase = new Map<string, User>([
                         adjustments: [],
                     },
                 ],
-                external: [
+                overLayer: [
                     {
                         label: "externalWarm",
                         id: 0,
@@ -192,7 +221,7 @@ export let dataBase = new Map<string, User>([
                         adjustments: [],
                     },
                 ],
-                top: [
+                outerLayer: [
                     {
                         label: "topWarm",
                         id: 0,
@@ -210,7 +239,7 @@ export let dataBase = new Map<string, User>([
                         adjustments: [],
                     },
                 ],
-                external: [
+                overLayer: [
                     {
                         label: "externalWarm",
                         id: 0,
@@ -248,7 +277,7 @@ export let dataBase = new Map<string, User>([
                         adjustments: [],
                     },
                 ],
-                top: [
+                outerLayer: [
                     {
                         label: "topWarm",
                         id: 0,
@@ -266,7 +295,7 @@ export let dataBase = new Map<string, User>([
                         adjustments: [],
                     },
                 ],
-                external: [
+                overLayer: [
                     {
                         label: "externalWarm",
                         id: 0,
