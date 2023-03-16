@@ -35,10 +35,10 @@ export type Kit = {
     id: number | null;
     tempMin: number;
     tempMax: number;
-    waterResistance?: WaterResistance;
-    layerPos?: LayerPos;
-    layerType: LayerType;
-    adjustments: FeedBack[];
+    waterResistance?: boolean;
+    // layerPos?: LayerPos;
+    // layerType: LayerType;
+    // adjustments: FeedBack[];
 };
 
 export enum WaterResistance {

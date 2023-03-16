@@ -1,319 +1,111 @@
-import { User, Kit, LayerType } from "../types/User.types";
+import { User as kitOptions} from "../types/User.types";
 
-
-export let defaultKit: User = {
+export let defaultKit: kitOptions = {
     hat: {
         baseLayer: [],
-        outerLayer: [], // Always wear a helmet!
+        outerLayer: [
+            {
+                label: "Helmet",
+                id: 0,
+                tempMin: -20,
+                tempMax: 100,
+            },
+        ],
         overLayer: [],
     },
     torso: {
-        baseLayer: [], // one base
-        outerLayer: [], // long Like a warm perfetto? and short,
-        overLayer: [], // Rain Jacket
+        baseLayer: [
+            {
+                label: "warm Baselayer",
+                id: 0,
+                tempMin: -10,
+                tempMax: 15,
+            },
+        ],
+        outerLayer: [
+            {
+                label: "Long Sleeve Jersey",
+                id: 0,
+                tempMin: -10,
+                tempMax: 10,
+            },
+            {
+                label: "Short Sleeve Jersey",
+                id: 1,
+                tempMin: 10,
+                tempMax: 40,
+            },
+        ],
+        overLayer: [
+            {
+                label: "Rain Jacket",
+                id: 0,
+                tempMin: -10,
+                tempMax: 10,
+                waterResistance: false,
+            },
+        ], // Rain Jacket
     },
     legs: {
         baseLayer: [],
-        outerLayer: [], // Long bibs and shorts
+        outerLayer: [
+            {
+                label: "Warm Bib Tights",
+                id: 0,
+                tempMin: -10,
+                tempMax: 10,
+            },
+            {
+                label: "Short Bib tights",
+                id: 1,
+                tempMin: 10,
+                tempMax: 40,
+            },
+        ],
         overLayer: [],
     },
     feet: {
-        baseLayer: [], // warm sock and summer sock
-        outerLayer: [], // standard shoe - always picks a sock
-        overLayer: [], // overshoes 
+        baseLayer: [
+            {
+                label: "Warm socks",
+                id: 0,
+                tempMin: -10,
+                tempMax: 15,
+            },
+            {
+                label: "light socks",
+                id: 1,
+                tempMin: 15,
+                tempMax: 40,
+            },
+        ],
+        outerLayer: [
+            {
+                label: "Cycling Shoes",
+                id: 0,
+                tempMin: 0,
+                tempMax: 0,
+            },
+        ],
+        overLayer: [
+            {
+                label: "Overshoes",
+                id: 0,
+                tempMin: -10,
+                tempMax: 10,
+            },
+        ],
     },
     hands: {
-        baseLayer: [], 
-        outerLayer: [], // gloves or no gloves 
+        baseLayer: [],
+        outerLayer: [
+            {
+                label: "Gloves",
+                id: 0,
+                tempMin: -10,
+                tempMax: 10,
+            },
+        ],
         overLayer: [],
     },
 };
-
-// Example of what the database would be like with the current types
-export let dataBase = new Map<string, User>([
-    [
-        "UserA",
-        {
-            hat: {
-                baseLayer: [
-                    {
-                        label: "baseWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.base,
-                        adjustments: [],
-                    },
-                    {
-                        label: "baseHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.base,
-                        adjustments: [],
-                    },
-                ],
-                outerLayer: [
-                    {
-                        label: "topWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.top,
-                        adjustments: [],
-                    },
-                    {
-                        label: "topHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.top,
-                        adjustments: [],
-                    },
-                ],
-                overLayer: [
-                    {
-                        label: "externalWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.external,
-                        adjustments: [],
-                    },
-                    {
-                        label: "externalHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.external,
-                        adjustments: [],
-                    },
-                ],
-            },
-            torso: {
-                baseLayer: [
-                    {
-                        label: "baseWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.base,
-                        adjustments: [],
-                    },
-                    {
-                        label: "baseHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.base,
-                        adjustments: [],
-                    },
-                ],
-                outerLayer: [
-                    {
-                        label: "topWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.top,
-                        adjustments: [],
-                    },
-                    {
-                        label: "topHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.top,
-                        adjustments: [],
-                    },
-                ],
-                overLayer: [
-                    {
-                        label: "externalWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.external,
-                        adjustments: [],
-                    },
-                    {
-                        label: "externalHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.external,
-                        adjustments: [],
-                    },
-                ],
-            },
-            legs: {
-                baseLayer: [
-                    {
-                        label: "baseWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.base,
-                        adjustments: [],
-                    },
-                    {
-                        label: "baseHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.base,
-                        adjustments: [],
-                    },
-                ],
-                outerLayer: [
-                    {
-                        label: "topWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.top,
-                        adjustments: [],
-                    },
-                    {
-                        label: "topHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.top,
-                        adjustments: [],
-                    },
-                ],
-                overLayer: [
-                    {
-                        label: "externalWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.external,
-                        adjustments: [],
-                    },
-                    {
-                        label: "externalHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.external,
-                        adjustments: [],
-                    },
-                ],
-            },
-            feet: {
-                baseLayer: [
-                    {
-                        label: "baseWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.base,
-                        adjustments: [],
-                    },
-                    {
-                        label: "baseHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.base,
-                        adjustments: [],
-                    },
-                ],
-                outerLayer: [
-                    {
-                        label: "topWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.top,
-                        adjustments: [],
-                    },
-                    {
-                        label: "topHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.top,
-                        adjustments: [],
-                    },
-                ],
-                overLayer: [
-                    {
-                        label: "externalWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.external,
-                        adjustments: [],
-                    },
-                    {
-                        label: "externalHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.external,
-                        adjustments: [],
-                    },
-                ],
-            },
-            hands: {
-                baseLayer: [
-                    {
-                        label: "baseWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.base,
-                        adjustments: [],
-                    },
-                    {
-                        label: "baseHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.base,
-                        adjustments: [],
-                    },
-                ],
-                outerLayer: [
-                    {
-                        label: "topWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.top,
-                        adjustments: [],
-                    },
-                    {
-                        label: "topHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.top,
-                        adjustments: [],
-                    },
-                ],
-                overLayer: [
-                    {
-                        label: "externalWarm",
-                        id: 0,
-                        tempMin: 15,
-                        tempMax: 40,
-                        layerType: LayerType.external,
-                        adjustments: [],
-                    },
-                    {
-                        label: "externalHot",
-                        id: 1,
-                        tempMin: -5,
-                        tempMax: 15,
-                        layerType: LayerType.external,
-                        adjustments: [],
-                    },
-                ],
-            },
-        },
-    ],
-]);
