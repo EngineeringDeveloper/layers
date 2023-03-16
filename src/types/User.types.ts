@@ -1,5 +1,5 @@
 // Is this overcomplicating it? depends on format of DB
-export type User = {
+export type kitOptions = {
     hat: LayerOptions;
     torso: LayerOptions;
     legs: LayerOptions;
@@ -40,35 +40,3 @@ export type Kit = {
     // layerType: LayerType;
     // adjustments: FeedBack[];
 };
-
-export enum WaterResistance {
-    none,
-    resistant,
-    high,
-}
-
-export enum FeedBack {
-    tooHot,
-    ok,
-    tooCold,
-    tooWet,
-}
-
-//** Defines where the kit is placed */
-export enum LayerPos {
-    hat,
-    torso,
-    legs,
-    feet,
-}
-
-//** Defines what layers can be used together */
-export enum LayerType {
-    //** Rain jackets, gillets, windproof layers, Overshoes */
-    external,
-    //** Jerseys, bibs */
-    top,
-    //** Thermals, Socks, Leg warmers? */
-    base,
-    any,
-}

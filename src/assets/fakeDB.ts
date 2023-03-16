@@ -1,4 +1,4 @@
-import { User as kitOptions} from "../types/User.types";
+import { kitOptions} from "../types/User.types";
 
 export let defaultKit: kitOptions = {
     hat: {

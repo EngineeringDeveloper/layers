@@ -4,7 +4,7 @@ import {
     KitSelection,
     LayerOptions,
     LayerType,
-    User,
+    kitOptions,
     WaterResistance,
 } from "../types/User.types";
 
@@ -20,7 +20,7 @@ const defaultNoSelection: Kit = {
 
 export async function selectKit(
     weather: OpenWeatherCurrentResponse,
-    user: User
+    user: kitOptions
 ): Promise<KitSelection> {
     const tempMax = weather.main.temp_max;
     const tempMin = weather.main.temp_min;
