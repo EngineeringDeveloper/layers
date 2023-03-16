@@ -3,20 +3,8 @@ import {
     Kit,
     KitSelection,
     LayerOptions,
-    LayerType,
     kitOptions,
-    WaterResistance,
 } from "../types/User.types";
-
-const defaultNoSelection: Kit = {
-    label: "",
-    id: null,
-    tempMin: 0,
-    tempMax: 0,
-    waterResistance: 0,
-    layerType: LayerType.any,
-    adjustments: [],
-};
 
 export async function selectKit(
     weather: OpenWeatherCurrentResponse,
@@ -27,14 +15,9 @@ export async function selectKit(
     const feeslLike = weather.main.feels_like;
 
     // TODO User adjusted Rain Tolerance?
-    const rainChance =
-        weather.rain["1h"] > 0.2
-            ? weather.rain["1h"] > 0.5
-                ? WaterResistance.high
-                : WaterResistance.resistant
-            : WaterResistance.none;
+    const rainChance = weather.rain["1h"] > 0.2
 
-    // for each object in User/KitSelection
+    // for each object in kitOptions
     // find a kit combination which satisfies the minimum and maximum temperature
     const kitSelection = Object.fromEntries(
         Object.entries(user).map((currentLayer) => {
@@ -44,8 +27,6 @@ export async function selectKit(
         })
     ) as KitSelection;
 
-    // TODO check for any null selections?
-
     return kitSelection;
 }
 
@@ -53,24 +34,34 @@ function pickBest(
     options: LayerOptions,
     tempMax: number,
     tempMin: number,
-    rainChance: WaterResistance
+    rainChance: boolean
 ) {
-    const torsoOptions = cartesianSelection(options) as [Kit, Kit, Kit][];
+    const comboOptions = cartesianSelection(options) as [Kit, Kit, Kit][];
 
     // want at least the min temp to be exceeded
-    const minTempOptions = minTemps(torsoOptions);
-    const minFilteredOptions = torsoOptions.filter((_, index) => {
+    const minTempOptions = minTemps(comboOptions);
+    const minFilteredOptions = comboOptions.filter((_, index) => {
         return minTempOptions[index] > tempMin;
     });
 
     // TODO Check for Rain - Should this overide the maxTemp?
-    const rainFilteredOptions = minFilteredOptions.filter((kitSet) => {
-        // either the Top or External Kit must have suitable weather resistance
-        return (
-            kitSet[2].waterResistance == rainChance ||
-            kitSet[0].waterResistance == rainChance
-        );
-    });
+    let rainFilteredOptions;
+    if (rainChance) {
+        rainFilteredOptions = minFilteredOptions.filter((kitSet) => {
+            // either the Top or External Kit must have suitable weather resistance
+            return (
+                kitSet.some(x => x.waterResistance)
+            );
+        });
+
+        if (rainFilteredOptions.length == 0) {
+            // No kit options have water resistance?
+            console.log("Rain Chance",rainChance , comboOptions, "none have waterResistance")
+            rainFilteredOptions = minFilteredOptions
+        }
+    } else {
+        rainFilteredOptions = minFilteredOptions
+    }
 
     // can the maxTemp be < the tempMax
     const maxTempOptions = maxTemps(minFilteredOptions);
@@ -113,15 +104,6 @@ function pickBest(
             break;
     }
 
-    // default is No kit not the default kit option
-    if (baseLayer == defaultNoSelection) {
-        baseLayer = null;
-    }
-
-    if (external == defaultNoSelection) {
-        external = null;
-    }
-
     return {
         baseLayer,
         top,
@@ -131,28 +113,26 @@ function pickBest(
 
 //** Find the Max temp sum of the kit options and return that kit array* /
 function maxTemps(options: Kit[][]) {
-    // TODO Consider Feedback
-    //  How exactly does Max temp work on a kit
-    // perfetto = 15 deg
-    // Perfetto + Gillet = 10 Deg
-    // So top - extras
     return options.map((kitSet) => {
         return kitSet.slice(1, -1).reduce<number>((accum, kit, _) => {
+            if (kit === null) {
+                return accum
+            }
             return accum - kit.tempMax;
         }, kitSet[0].tempMax);
     });
-    //.reduce<number>((prev, current, currentIndex, array) => { return array[prev] > current ? prev : currentIndex }, 0)]
 }
 
 //** Find the Min temp sum of the kit options and return that kit array */
 function minTemps(options: Kit[][]) {
-    // TODO Consider Feedback
     return options.map((kitSet) => {
         return kitSet.reduce<number>((accum, kit, _) => {
+            if (kit === null) {
+                return accum
+            }
             return accum + kit.tempMin;
         }, 0);
     });
-    //.reduce<number>((prev, current, currentIndex, array) => { return array[prev] < current ? prev : currentIndex }, 0)]
 }
 
 function cartesianSelection(layerOptions: LayerOptions) {
@@ -161,22 +141,17 @@ function cartesianSelection(layerOptions: LayerOptions) {
     //     [...layerOptions.baseLayer, defaultNoSelection],
     //     [...layerOptions.external, defaultNoSelection]
     // );
-    // TODO Use this Generator to reduce overhead, IE not generate all combinations?
+    // FUTURE Use this Generator to reduce overhead, IE not generate all combinations?
     return [
         ...cartesianIterator([
             layerOptions.outerLayer,
-            [...layerOptions.baseLayer, defaultNoSelection],
-            [...layerOptions.overLayer, defaultNoSelection],
+            [...layerOptions.baseLayer, null],
+            [...layerOptions.overLayer, null],
         ]),
     ];
 }
 
-//** X products arrays to get all the combinations */
-// function cartesian<T>(...a: T[][]): T[][] {
-//     return a.reduce((a, b) => a.flatMap((d: any) => b.map((e: any) => [d, e].flat())));
-// }
-
-//** X products arrays to get all the combinations */
+//** X products arrays to get all the combinations as a Generator*/
 function* cartesianIterator<T>(items: T[][]): Generator<T[]> {
     const remainder =
         items.length > 1 ? cartesianIterator(items.slice(1)) : [[]];
