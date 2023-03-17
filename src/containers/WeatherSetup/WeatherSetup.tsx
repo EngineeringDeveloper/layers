@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { getLocation } from "../../services/location.service";
 import { OpenWeatherOneCallResponse } from "../../types/OpenWeather.types";
 import { oneCallWeather } from "../../utils/RetrieveWeather";
+import { defaultKit } from "../../assets/database";
+import { selectKit } from "../../utils/ChooseKit"
+import { KitSelection } from "../../types/User.types";
+
 type WeatherDetails = {
   lon: number;
   lat: number;
@@ -13,6 +17,9 @@ export const WeatherSetup = () => {
   });
   const [weatherResponse, setWeatherResponse] =
     useState<OpenWeatherOneCallResponse>();
+  
+  const [kitSelection, setKitSelection] =
+    useState<KitSelection>();
 
   const [location, setLocation] = useState<{
     latitude: number;
@@ -43,7 +50,18 @@ export const WeatherSetup = () => {
   return (
     <div className="App">
       <div>
-        <h1>Current Temp: {weatherResponse?.current.temp}</h1>
+        <div>Current Temp: {JSON.stringify(weatherResponse)}</div>
+        <div>{JSON.stringify(defaultKit)}</div>
+        <button onClick={() => {
+          if (weatherResponse !== undefined) {
+            selectKit(weatherResponse, defaultKit).then((value) => {
+              setKitSelection(value)
+            }
+            )
+          }
+        }}
+        >Choose Kit</button>
+        <div>Kit Selection: {JSON.stringify(kitSelection)}</div>
       </div>
     </div>
   );

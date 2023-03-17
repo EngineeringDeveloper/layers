@@ -1,4 +1,4 @@
-import type { OpenWeatherCurrentResponse } from "../types/OpenWeather.types";
+import type { OpenWeatherOneCallResponse } from "../types/OpenWeather.types";
 import {
     Kit,
     KitSelection,
@@ -7,15 +7,16 @@ import {
 } from "../types/User.types";
 
 export async function selectKit(
-    weather: OpenWeatherCurrentResponse,
+    weather: OpenWeatherOneCallResponse,
     user: kitOptions
 ): Promise<KitSelection> {
-    const tempMax = weather.main.temp_max;
-    const tempMin = weather.main.temp_min;
-    const feeslLike = weather.main.feels_like;
+    const temps = [weather.hourly[0].temp, weather.hourly[3].temp]
+    const tempMax = temps[0] > temps[1]? temps[0]: temps[1];
+    const tempMin = temps[0] < temps[1]? temps[0]: temps[1];
+    // const feeslLike = weather.main.feels_like;
 
     // TODO User adjusted Rain Tolerance?
-    const rainChance = weather.rain["1h"] > 0.2
+    const rainChance = weather.daily[0].rain !== undefined?weather.daily[0].rain > 0.2: false
 
     // for each object in kitOptions
     // find a kit combination which satisfies the minimum and maximum temperature
@@ -50,7 +51,12 @@ function pickBest(
         rainFilteredOptions = minFilteredOptions.filter((kitSet) => {
             // either the Top or External Kit must have suitable weather resistance
             return (
-                kitSet.some(x => x.waterResistance)
+                kitSet.some(x => {
+                    if (x == null) {
+                        return false
+                    }
+                    return x.waterResistance
+                })
             );
         });
 

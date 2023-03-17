@@ -56,7 +56,7 @@ export let defaultKit: kitOptions = {
                 tempMax: 10,
             },
             {
-                label: "Short Bib tights",
+                label: "Bib Shorts",
                 id: 1,
                 tempMin: 10,
                 tempMax: 40,
