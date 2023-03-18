@@ -6,17 +6,28 @@ import {
     kitOptions,
 } from "../types/User.types";
 
+export interface SimpleWeather {
+    tempMax: number;
+    tempMin: number;
+    rainChance: boolean;
+}
+
+export function simpleWeather(weather: OpenWeatherOneCallResponse): SimpleWeather {
+    // FUTURE allow adjustment of preferences
+    // range of hours, rain tolerance, feelslike
+    const temps = weather.hourly.slice(0,3).map(x => x.temp);
+    const tempMax = temps.reduce((prev, cur) => cur > prev? cur: prev);
+    const tempMin = temps.reduce((prev, cur) => cur < prev? cur: prev);
+
+    const rainChance = weather.daily[0].rain !== undefined ? weather.daily[0].rain > 0.2 : false;
+    return { tempMax, tempMin, rainChance };
+}
+
 export async function selectKit(
-    weather: OpenWeatherOneCallResponse,
+    weather: SimpleWeather,
     user: kitOptions
 ): Promise<KitSelection> {
-    const temps = [weather.hourly[0].temp, weather.hourly[3].temp]
-    const tempMax = temps[0] > temps[1]? temps[0]: temps[1];
-    const tempMin = temps[0] < temps[1]? temps[0]: temps[1];
-    // const feeslLike = weather.main.feels_like;
-
-    // TODO User adjusted Rain Tolerance?
-    const rainChance = weather.daily[0].rain !== undefined?weather.daily[0].rain > 0.2: false
+    const { tempMax, tempMin, rainChance } = weather;
 
     // for each object in kitOptions
     // find a kit combination which satisfies the minimum and maximum temperature

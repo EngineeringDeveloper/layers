@@ -3,7 +3,7 @@ import { getLocation } from "../../services/location.service";
 import { OpenWeatherOneCallResponse } from "../../types/OpenWeather.types";
 import { oneCallWeather } from "../../utils/RetrieveWeather";
 import { defaultKit } from "../../assets/database";
-import { selectKit } from "../../utils/ChooseKit"
+import { selectKit, simpleWeather, SimpleWeather } from "../../utils/ChooseKit"
 import { KitSelection } from "../../types/User.types";
 
 type WeatherDetails = {
@@ -16,7 +16,7 @@ export const WeatherSetup = () => {
     lat: 0,
   });
   const [weatherResponse, setWeatherResponse] =
-    useState<OpenWeatherOneCallResponse>();
+    useState<SimpleWeather>();
   
   const [kitSelection, setKitSelection] =
     useState<KitSelection>();
@@ -41,7 +41,7 @@ export const WeatherSetup = () => {
           lat: location.latitude,
           lon: location.longitude,
         });
-        setWeatherResponse(weatherData);
+        setWeatherResponse(simpleWeather(weatherData));
       };
       getWeatherAndSetState();
     }
@@ -50,8 +50,7 @@ export const WeatherSetup = () => {
   return (
     <div className="App">
       <div>
-        <div>Current Temp: {JSON.stringify(weatherResponse)}</div>
-        <div>{JSON.stringify(defaultKit)}</div>
+        <h1>Weather Input: {JSON.stringify(weatherResponse)}</h1>
         <button onClick={() => {
           if (weatherResponse !== undefined) {
             selectKit(weatherResponse, defaultKit).then((value) => {
