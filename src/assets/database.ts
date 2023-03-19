@@ -8,7 +8,7 @@ export let defaultKit: kitOptions = {
                 label: "Helmet",
                 id: 0,
                 tempMin: -20,
-                tempMax: 100,
+                tempMax: 40,
             },
         ],
         overLayer: [],
@@ -18,7 +18,7 @@ export let defaultKit: kitOptions = {
             {
                 label: "warm Baselayer",
                 id: 0,
-                tempMin: -10,
+                tempMin: -10, 
                 tempMax: 15,
             },
         ],
@@ -40,8 +40,8 @@ export let defaultKit: kitOptions = {
             {
                 label: "Rain Jacket",
                 id: 0,
-                tempMin: -10,
-                tempMax: 10,
+                tempMin: 0,
+                tempMax: 0,
                 waterResistance: false,
             },
         ], // Rain Jacket

@@ -13,20 +13,19 @@ export type LayerOptions = {
     overLayer: Kit[];
 };
 
-//** Return type of main kit selection function */
-export type KitSelection = {
-    hat: Layers;
-    torso: Layers;
-    legs: Layers;
-    feet: Layers;
-    hands: Layers;
+export type LayerSelection = {
+    baseLayer: Kit | null;
+    outerLayer: Kit;
+    overLayer: Kit | null;
 };
 
-export type Layers = {
-    baseLayer: Kit | null;
-    //** Must have a top */
-    top: Kit;
-    external: Kit | null;
+//** Return type of main kit selection function */
+export type KitSelection = {
+    hat: LayerSelection;
+    torso: LayerSelection;
+    legs: LayerSelection;
+    feet: LayerSelection;
+    hands: LayerSelection;
 };
 
 //** User owns kit */

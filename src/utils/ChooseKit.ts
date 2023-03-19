@@ -51,9 +51,10 @@ function pickBest(
     const comboOptions = cartesianSelection(options) as [Kit, Kit, Kit][];
 
     // want at least the min temp to be exceeded
-    const minTempOptions = minTemps(comboOptions);
+    const minTempOptions = minTemps(comboOptions, tempMin);
+    console.log("min", comboOptions, minTempOptions)
     const minFilteredOptions = comboOptions.filter((_, index) => {
-        return minTempOptions[index] > tempMin;
+        return minTempOptions[index] <= 0;
     });
 
     // TODO Check for Rain - Should this overide the maxTemp?
@@ -82,15 +83,16 @@ function pickBest(
 
     // can the maxTemp be < the tempMax
     const maxTempOptions = maxTemps(minFilteredOptions);
+    console.log("max", minFilteredOptions, maxTempOptions)
     const maxMinFilteredOptions = rainFilteredOptions.filter((_, index) => {
-        return maxTempOptions[index] < tempMax;
+        return maxTempOptions[index] > tempMax;
     });
 
     // TODO Check for feels like?
 
-    let top;
+    let outerLayer;
     let baseLayer;
-    let external;
+    let overLayer;
 
     switch (maxMinFilteredOptions.length) {
         case 0:
@@ -99,32 +101,32 @@ function pickBest(
                 console.log(
                     "Selecting first kit options which satisfy the min temp requirements"
                 );
-                top = minFilteredOptions[0][0];
+                outerLayer = minFilteredOptions[0][0];
                 baseLayer = minFilteredOptions[0][1];
-                external = minFilteredOptions[0][2];
+                overLayer = minFilteredOptions[0][2];
             } else {
                 console.warn("No Appropriate Kit was found");
                 return null;
             }
             break;
         case 1:
-            top = maxMinFilteredOptions[0][0];
+            outerLayer = maxMinFilteredOptions[0][0];
             baseLayer = maxMinFilteredOptions[0][1];
-            external = maxMinFilteredOptions[0][2];
+            overLayer = maxMinFilteredOptions[0][2];
             break;
 
         default:
             // TODO Decide how to pick between multiple options
-            top = minFilteredOptions[0][0];
+            outerLayer = minFilteredOptions[0][0];
             baseLayer = minFilteredOptions[0][1];
-            external = minFilteredOptions[0][2];
+            overLayer = minFilteredOptions[0][2];
             break;
     }
 
     return {
         baseLayer,
-        top,
-        external,
+        outerLayer,
+        overLayer,
     };
 }
 
@@ -140,15 +142,15 @@ function maxTemps(options: Kit[][]) {
     });
 }
 
-//** Find the Min temp sum of the kit options and return that kit array */
-function minTemps(options: Kit[][]) {
+//** Find the Min temp -sum of the kit options and return that kit array Returns Array of delta from temp Min Smaller than 0 * /
+function minTemps(options: Kit[][], tempMin: number) {
     return options.map((kitSet) => {
-        return kitSet.reduce<number>((accum, kit, _) => {
+        return kitSet.slice(1,-1).reduce<number>((accum, kit) => {
             if (kit === null) {
                 return accum
             }
-            return accum + kit.tempMin;
-        }, 0);
+            return accum + (kit.tempMin - tempMin);
+        }, kitSet[0].tempMin - tempMin);
     });
 }
 
