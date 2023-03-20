@@ -4,8 +4,9 @@ import { WeatherSetup } from "./containers/WeatherSetup/WeatherSetup";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 import AuthRoute from "./components/AuthRoute";
+import { HomePage } from "./pages/HomePage";
 function App() {
-  console.log("Firebase auth state...", getAuth());
+  const auth = getAuth();
 
   return (
     <BrowserRouter>
@@ -14,11 +15,11 @@ function App() {
           path="/"
           element={
             <AuthRoute>
-              <WeatherSetup />
+              <HomePage auth={auth} />
             </AuthRoute>
           }
         />
-        <Route path="/" element={<WeatherSetup />} />
+        <Route path="/weather" element={<WeatherSetup />} />
         <Route path="/login" element={<FirebaseAuth />} />
       </Routes>
     </BrowserRouter>
