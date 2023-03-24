@@ -4,13 +4,14 @@ import { OpenWeatherOneCallResponse } from "../../types/OpenWeather.types";
 import { oneCallWeather } from "../../utils/RetrieveWeather";
 import { defaultKit } from "../../assets/database";
 import { selectKit, simpleWeather, SimpleWeather } from "../../utils/ChooseKit";
-import { KitSelection } from "../../types/User.types";
+import { kitOptions, KitSelection } from "../../types/User.types";
 
 type WeatherDetails = {
     lon: number;
     lat: number;
 };
-export const WeatherSetup = () => {
+export const WeatherSetup = (props: kitOptions) => {
+    
     const [weatherInfo, setWeatherInfo] = useState<WeatherDetails>({
         lon: 0,
         lat: 0,
@@ -53,7 +54,7 @@ export const WeatherSetup = () => {
                 <button
                     onClick={() => {
                         if (weatherResponse !== undefined) {
-                            selectKit(weatherResponse, defaultKit).then(
+                            selectKit(weatherResponse, props).then(
                                 (value) => {
                                     setKitSelection(value);
                                 }
