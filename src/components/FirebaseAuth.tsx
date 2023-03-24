@@ -11,7 +11,7 @@ const uiConfig = {
 export const FirebaseAuth = () => {
   return (
     <div>
-      <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />;
+      <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
     </div>
   );
 };
