@@ -2,6 +2,7 @@ import { Auth, onAuthStateChanged, User } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { defaultKit } from "../assets/DefaultKit";
+import { WeatherSetup } from "../containers/WeatherSetup/WeatherSetup";
 import { db } from "../firebase";
 import { kitOptions } from "../types/User.types";
 export const Kit = (props: { auth: Auth }) => {
@@ -55,6 +56,7 @@ export const Kit = (props: { auth: Auth }) => {
       <h1>Hello, {auth.currentUser?.displayName}</h1>
       <p>Lets get your kit</p>
       <>{userKit && showKits()}</>
+      <WeatherSetup/>
     </div>
   );
 };
