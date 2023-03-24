@@ -15,6 +15,7 @@ export const Kit = (props: { auth: Auth }) => {
         const uid = user.uid;
         setUserInfo(user);
         const userRef = doc(db, "users", uid);
+        console.log("userRef", userRef);
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
           const userDetails = docSnap.data();
@@ -23,8 +24,9 @@ export const Kit = (props: { auth: Auth }) => {
           } else {
             await setDoc(doc(db, "users", uid), defaultKit);
           }
+        } else {
+          await setDoc(doc(db, "users", uid), defaultKit);
         }
-      } else {
       }
     });
   }, []);
