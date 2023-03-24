@@ -1,3 +1,4 @@
+import { defaultKit } from "../assets/database";
 import type { OpenWeatherOneCallResponse } from "../types/OpenWeather.types";
 import {
     Kit,
@@ -23,9 +24,7 @@ export function simpleWeather(
     const tempMin = temps.reduce((prev, cur) => (cur < prev ? cur : prev));
 
     const rainChance =
-        weather.daily[0].rain !== undefined
-            ? weather.daily[0].rain > 0.2
-            : false;
+        weather.daily[0].rain !== undefined ? weather.daily[0].rain > 0 : false;
     return { tempMax, tempMin, rainChance };
 }
 
@@ -34,6 +33,48 @@ export async function selectKit(
     userKitOptions: kitOptions
 ): Promise<KitSelection> {
     const { tempMax, tempMin, rainChance } = weather;
+
+    // if (userKitOptions == defaultKit) {
+    console.log("default");
+    const basicKit: KitSelection = {
+        hat: {
+            outerLayer: defaultKit.hat.outerLayer[0],
+        },
+        torso: {
+            outerLayer:
+                weather.tempMin < 5
+                    ? defaultKit.torso.outerLayer[0]
+                    : defaultKit.torso.outerLayer[1],
+            baseLayer:
+                weather.tempMin < 15 ? defaultKit.torso.baseLayer[0] : null,
+            overLayer: weather.rainChance
+                ? defaultKit.torso.overLayer[0]
+                : null,
+        },
+        legs: {
+            outerLayer:
+                weather.tempMin < 10
+                    ? defaultKit.legs.outerLayer[0]
+                    : defaultKit.legs.outerLayer[1],
+        },
+        feet: {
+            baseLayer:
+                weather.tempMin < 10
+                    ? defaultKit.feet.outerLayer[0]
+                    : defaultKit.feet.outerLayer[1],
+            outerLayer: defaultKit.feet.outerLayer[0],
+            overLayer: weather.tempMin < 5 || weather.rainChance? defaultKit.feet.overLayer[0]: null 
+        },
+        hands: {
+            outerLayer:
+                weather.tempMin < 10
+                    ? defaultKit.hands.outerLayer[0]
+                    : defaultKit.hands.outerLayer[1],
+        },
+    };
+
+    return basicKit as KitSelection;
+    // }
 
     // for each object in kitOptions
     // find a kit combination which satisfies the minimum and maximum temperature

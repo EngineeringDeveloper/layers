@@ -14,9 +14,9 @@ export type LayerOptions = {
 };
 
 export type LayerSelection = {
-    baseLayer: Kit | null;
+    baseLayer?: Kit | null;
     outerLayer: Kit;
-    overLayer: Kit | null;
+    overLayer?: Kit | null;
 };
 
 //** Return type of main kit selection function */
