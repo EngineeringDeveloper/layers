@@ -25,6 +25,7 @@ export const Kit = (props: { auth: Auth }) => {
             await setDoc(doc(db, "users", uid), defaultKit);
           }
         } else {
+          //
           await setDoc(doc(db, "users", uid), defaultKit);
         }
       }
@@ -58,7 +59,7 @@ export const Kit = (props: { auth: Auth }) => {
       <h1>Hello, {auth.currentUser?.displayName}</h1>
       <p>Lets get your kit</p>
       <>{userKit && showKits()}</>
-      <WeatherSetup/>
+      <WeatherSetup />
     </div>
   );
 };
