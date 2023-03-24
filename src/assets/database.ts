@@ -100,6 +100,12 @@ export let defaultKit: kitOptions = {
         baseLayer: [],
         outerLayer: [
             {
+                label: "No gloves",
+                id: 0,
+                tempMin: -10,
+                tempMax: 10,
+            },
+            {
                 label: "Gloves",
                 id: 0,
                 tempMin: -10,
